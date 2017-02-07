@@ -241,22 +241,49 @@ class Ofx
 
         $investmentAccount = new BankAccount();
         $investmentAccount->transactionUid = $xml->TRNUID;
-        $investmentAccount->accountNumber = $xml->INVSTMTRS->$nodeName->ACCTID;
-        $investmentAccount->brokerId = $xml->INVSTMTRS->$nodeName->BROKERID;
-        $investmentAccount->balance = $xml->INVSTMTRS->INVBAL->AVAILCASH;
-        $investmentAccount->balanceDate = $this->createDateTimeFromStr($xml->INVSTMTRS->LEDGERBAL->DTASOF, true);
+        $investmentAccount->accountNumber = (string) $xml->INVSTMTRS->$nodeName->ACCTID;
+        $investmentAccount->brokerId = (string) $xml->INVSTMTRS->$nodeName->BROKERID;
+        $investmentAccount->balance = (float) $xml->INVSTMTRS->INVBAL->AVAILCASH;
+        $investmentAccount->balanceDate = $this->createDateTimeFromStr($xml->INVSTMTRS->DTASOF, true);
 
         $investmentAccount->statement = new Statement();
         $investmentAccount->statement->currency = $xml->INVSTMTRS->CURDEF;
         $investmentAccount->statement->startDate = $this->createDateTimeFromStr($xml->INVSTMTRS->INVTRANLIST->DTSTART, true);
         $investmentAccount->statement->endDate = $this->createDateTimeFromStr($xml->INVSTMTRS->INVTRANLIST->DTEND, true);
-        $investmentAccount->statement->transactions->buyOtherTransactions = $this->buildBuyTransactions($xml->INVSTMTRS->INVTRANLIST->BUYOTHER);
-        $investmentAccount->statement->transactions->buyStockTransactions = $this->buildBuyTransactions($xml->INVSTMTRS->INVTRANLIST->BUYSTOCK);
 
-        $investmentAccount->statement->transactions->incomeTransactions = $this->buildIncomeTransactions($xml->INVSTMTRS->INVTRANLIST->INCOME);
-        $investmentAccount->statement->transactions->stockPositions = $this->buildStockPositions($xml->INVSTMTRS->INVPOSLIST->POSSTOCK);
+        if ($xml->INVSTMTRS->INVTRANLIST->INVBANKTRAN) $investmentAccount->statement->transactions = $this->buildInvBankTransactions($xml->INVSTMTRS->INVTRANLIST->INVBANKTRAN);
+        if ($xml->INVSTMTRS->INVTRANLIST->BUYOTHER) $investmentAccount->statement->transactions->buyOtherTransactions = $this->buildBuyTransactions($xml->INVSTMTRS->INVTRANLIST->BUYOTHER);
+        if ($xml->INVSTMTRS->INVTRANLIST->BUYSTOCK) $investmentAccount->statement->transactions->buyStockTransactions = $this->buildBuyTransactions($xml->INVSTMTRS->INVTRANLIST->BUYSTOCK);
+        if ($xml->INVSTMTRS->INVTRANLIST->INCOME) $investmentAccount->statement->transactions->incomeTransactions = $this->buildIncomeTransactions($xml->INVSTMTRS->INVTRANLIST->INCOME);
+        if ($xml->INVSTMTRS->INVPOSLIST->POSSTOCK) $investmentAccount->statement->transactions->stockPositions = $this->buildStockPositions($xml->INVSTMTRS->INVPOSLIST->POSSTOCK);
 
         return $investmentAccount;
+    }
+
+    /**
+     * @param SimpleXMLElement $transactions
+     * @return array
+     * @throws \Exception
+     */
+    private function buildInvBankTransactions(SimpleXMLElement $transactions)
+    {
+        $return = [];
+        foreach ($transactions as $t) {
+            $transaction = new Transaction();
+            $transaction->type = (string)$t->STMTTRN->TRNTYPE;
+            $transaction->date = $this->createDateTimeFromStr($t->STMTTRN->DTPOSTED, true);
+            if ('' !== (string)$t->DTUSER) {
+                $transaction->userInitiatedDate = $this->createDateTimeFromStr($t->DTUSER, true);
+            }
+            $transaction->amount = $this->createAmountFromStr($t->STMTTRN->TRNAMT, true);
+            $transaction->uniqueId = (string)$t->STMTTRN->FITID;
+            $transaction->name = (string)$t->STMTTRN->NAME;
+            $transaction->memo = (string)$t->STMTTRN->MEMO;
+
+            $return[] = $transaction;
+        }
+
+        return $return;
     }
 
 
