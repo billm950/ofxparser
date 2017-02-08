@@ -251,11 +251,15 @@ class Ofx
         $investmentAccount->statement->startDate = $this->createDateTimeFromStr($xml->INVSTMTRS->INVTRANLIST->DTSTART, true);
         $investmentAccount->statement->endDate = $this->createDateTimeFromStr($xml->INVSTMTRS->INVTRANLIST->DTEND, true);
 
-        if ($xml->INVSTMTRS->INVTRANLIST->INVBANKTRAN) $investmentAccount->statement->transactions = $this->buildInvBankTransactions($xml->INVSTMTRS->INVTRANLIST->INVBANKTRAN);
+        $investmentAccount->statement->transactions = new InvestmentTransaction();
+        if ($xml->INVSTMTRS->INVTRANLIST->INVBANKTRAN) $investmentAccount->statement->transactions->otherTransactions    = $this->buildInvBankTransactions($xml->INVSTMTRS->INVTRANLIST->INVBANKTRAN);
         if ($xml->INVSTMTRS->INVTRANLIST->BUYOTHER) $investmentAccount->statement->transactions->buyOtherTransactions = $this->buildBuyTransactions($xml->INVSTMTRS->INVTRANLIST->BUYOTHER);
         if ($xml->INVSTMTRS->INVTRANLIST->BUYSTOCK) $investmentAccount->statement->transactions->buyStockTransactions = $this->buildBuyTransactions($xml->INVSTMTRS->INVTRANLIST->BUYSTOCK);
-        if ($xml->INVSTMTRS->INVTRANLIST->INCOME) $investmentAccount->statement->transactions->incomeTransactions = $this->buildIncomeTransactions($xml->INVSTMTRS->INVTRANLIST->INCOME);
-        if ($xml->INVSTMTRS->INVPOSLIST->POSSTOCK) $investmentAccount->statement->transactions->stockPositions = $this->buildStockPositions($xml->INVSTMTRS->INVPOSLIST->POSSTOCK);
+        if ($xml->INVSTMTRS->INVTRANLIST->INCOME) $investmentAccount->statement->transactions->incomeTransactions   = $this->buildIncomeTransactions($xml->INVSTMTRS->INVTRANLIST->INCOME);
+        
+        $investmentAccount->statement->stockPositions = new Statement();
+        if ($xml->INVSTMTRS->INVPOSLIST->POSSTOCK) $investmentAccount->statement->stockPositions->stocks             = $this->buildStockPositions($xml->INVSTMTRS->INVPOSLIST->POSSTOCK);
+        if ($xml->INVSTMTRS->INVPOSLIST->POSOTHER) $investmentAccount->statement->stockPositions->other              = $this->buildStockPositions($xml->INVSTMTRS->INVPOSLIST->POSOTHER);
 
         return $investmentAccount;
     }
@@ -482,7 +486,7 @@ class Ofx
             }
         }
 
-        throw new \RuntimeException('Failed to initialize DateTime for string: ' . $dateString);
+        //throw new \RuntimeException('Failed to initialize DateTime for string: ' . $dateString);
     }
 
     /**

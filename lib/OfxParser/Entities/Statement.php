@@ -14,6 +14,12 @@ class Statement extends AbstractEntity
      */
     public $transactions;
 
+
+    /**
+     * @var Transaction[]
+     */
+    public $stockPositions;
+
     /**
      * @var \DateTimeInterface
      */
