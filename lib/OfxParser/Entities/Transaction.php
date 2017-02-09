@@ -79,12 +79,12 @@ class Transaction extends AbstractEntity
     /**
      * @var string
      */
-    public $unitprice;
+    public $unitPrice;
 
     /**
      * @var string
      */
-    public $marketvalue;
+    public $marketValue;
 
     /**
      * @var string
