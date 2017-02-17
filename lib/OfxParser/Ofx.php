@@ -282,7 +282,7 @@ class Ofx
             if ('' !== (string)$t->DTUSER) {
                 $transaction->userInitiatedDate = $this->createDateTimeFromStr($t->DTUSER, true);
             }
-            $transaction->amount = $this->createAmountFromStr($t->STMTTRN->TRNAMT, true);
+            $transaction->amount = (float) $t->STMTTRN->TRNAMT;
             $transaction->uniqueId = (string)$t->STMTTRN->FITID;
             $transaction->name = (string)$t->STMTTRN->NAME;
             $transaction->memo = (string)$t->STMTTRN->MEMO;
@@ -331,7 +331,7 @@ class Ofx
             $transaction->type = (string)$t->INVPOS->POSTYPE;
             $transaction->dateValue = $this->createDateTimeFromStr($t->INVPOS->DTPRICEASOF, true);
 
-            $transaction->total = (float) $this->createAmountFromStr($t->INVPOS->MKTVAL);
+            $transaction->total = (float)$t->INVPOS->MKTVAL;
             $transaction->memo = (string)$t->INVPOS->MEMO;
             $transaction->secid = (string) $t->INVPOS->SECID->UNIQUEID;
             $transaction->units = (float) $t->INVPOS->UNITS;
@@ -361,7 +361,7 @@ class Ofx
                 $transaction->userInitiatedDate = $this->createDateTimeFromStr($t->INVTRAN->DTUSER);
             }
 
-            $transaction->amount = (float) $this->createAmountFromStr($t->TOTAL);
+            $transaction->amount = (float) $t->TOTAL;
             $transaction->uniqueId = (string)$t->INVTRAN->FITID;
             $transaction->memo = (string)$t->INVTRAN->MEMO;
             $transaction->secid = (string) $t->SECID->UNIQUEID;
@@ -419,7 +419,7 @@ class Ofx
             if ('' !== (string)$t->DTUSER) {
                 $transaction->userInitiatedDate = $this->createDateTimeFromStr($t->DTUSER, true);
             }
-            $transaction->amount = $this->createAmountFromStr($t->TRNAMT, true);
+            $transaction->amount = (float) $t->TRNAMT;
             $transaction->uniqueId = (string)$t->FITID;
             $transaction->name = (string)$t->NAME;
             $transaction->memo = (string)$t->MEMO;
