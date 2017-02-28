@@ -244,6 +244,7 @@ class Ofx
         $investmentAccount->accountNumber = (string) $xml->INVSTMTRS->$nodeName->ACCTID;
         $investmentAccount->brokerId = (string) $xml->INVSTMTRS->$nodeName->BROKERID;
         $investmentAccount->balance = (float) $xml->INVSTMTRS->INVBAL->AVAILCASH;
+        $investmentAccount->marginBalance = (float) $xml->INVSTMTRS->INVBAL->MARGINBALANCE;
         $investmentAccount->buyPower = (float) $xml->INVSTMTRS->INVBAL->BUYPOWER;
         $investmentAccount->marketValue = (float) $xml->INVSTMTRS->INVBAL->BALLIST->BAL->VALUE;
         $investmentAccount->balanceDate = $this->createDateTimeFromStr($xml->INVSTMTRS->DTASOF, true);
