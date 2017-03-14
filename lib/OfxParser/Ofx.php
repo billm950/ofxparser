@@ -260,6 +260,7 @@ class Ofx
         if ($xml->INVSTMTRS->INVTRANLIST->BUYOTHER) $investmentAccount->statement->transactions->buyOtherTransactions = $this->buildBuyTransactions($xml->INVSTMTRS->INVTRANLIST->BUYOTHER);
         if ($xml->INVSTMTRS->INVTRANLIST->BUYSTOCK) $investmentAccount->statement->transactions->buyStockTransactions = $this->buildBuyTransactions($xml->INVSTMTRS->INVTRANLIST->BUYSTOCK);
         if ($xml->INVSTMTRS->INVTRANLIST->INCOME) $investmentAccount->statement->transactions->incomeTransactions   = $this->buildIncomeTransactions($xml->INVSTMTRS->INVTRANLIST->INCOME);
+        if ($xml->INVSTMTRS->INVTRANLIST->TRANSFER) $investmentAccount->statement->transactions->TransferTransactions   = $this->buildIncomeTransactions($xml->INVSTMTRS->INVTRANLIST->TRANSFER);
         
         $investmentAccount->statement->stockPositions = new Statement();
         if ($xml->INVSTMTRS->INVPOSLIST->POSSTOCK) $investmentAccount->statement->stockPositions->stocks             = $this->buildStockPositions($xml->INVSTMTRS->INVPOSLIST->POSSTOCK);
